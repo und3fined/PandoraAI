@@ -42,7 +42,7 @@ const exportAppData = () => {
     const dataStr = JSON.stringify(localStorage);
     const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
 
-    const exportFileDefaultName = `PandoraAI-${Date.now()}.data.json`;
+    const exportFileDefaultName = `und3fyAI-${Date.now()}.data.json`;
 
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);

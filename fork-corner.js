@@ -1,6 +1,6 @@
 export default function initForkCorner() {
     const fchead = document.getElementsByTagName('head')[0];
-    const fcController = document.getElementById('fork-corner');
+    // const fcController = document.getElementById('fork-corner');
     const fcIcon = document.createElement('i');
 
     const fcDevicon = document.createElement('link');
@@ -34,6 +34,6 @@ export default function initForkCorner() {
     fchead.appendChild(fcDevicon);
 
     // insert icon inside controller
-    fcController.appendChild(fcIcon);
-    fcController.parentNode.insertBefore(fcElement, fcController.nextSibling);
+    // fcController.appendChild(fcIcon);
+    // fcController.parentNode.insertBefore(fcElement, fcController.nextSibling);
 }

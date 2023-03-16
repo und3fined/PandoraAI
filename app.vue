@@ -35,13 +35,6 @@ onMounted(() => {
 </script>
 
 <template>
-    <a
-        href="https://github.com/waylaidwanderer/PandoraAI"
-        target="_blank"
-        id="fork-corner"
-        class="fork-corner fc-size-small fc-pos-tr fc-animate fc-theme-github"
-        title="Fork me on GitHub"
-    ></a>
     <div class="flex flex-row min-h-screen text-slate-300">
         <AppSidebar/>
         <Transition name="fade">
@@ -58,7 +51,7 @@ onMounted(() => {
                 'lg:ml-0': !isMenuOpening,
             }"
         >
-            <header class="px-3 py-6 text-center bg-purple-500/[15%] backdrop-blur shadow">
+            <header class="px-3 py-6 text-center bg-zinc-500/[15%] backdrop-blur shadow">
                 <!-- Menu icon -->
                 <button
                     @click="isMenuOpen = true"
@@ -87,18 +80,12 @@ onMounted(() => {
                     />
                 </button>
                 <!-- Title -->
-                <h1 class="text-2xl font-bold text-white/80 drop-shadow-md">Pandora<span class="font-light">AI</span></h1>
+                <h1 class="text-2xl font-bold text-white/80 drop-shadow-md">und3fy<span class="font-light">AI</span></h1>
             </header>
             <main class="flex flex-grow py-2">
                 <Chat/>
             </main>
             <footer class="px-3 pb-6 text-center">
-                <span class="text-xs font-light text-slate-400">
-                    powered by
-                    <a href="https://github.com/waylaidwanderer/node-chatgpt-api" target="_blank">
-                        https://github.com/waylaidwanderer/node-chatgpt-api
-                    </a>
-                </span>
             </footer>
         </div>
     </div>
@@ -110,21 +97,7 @@ onMounted(() => {
 }
 
 body {
-    background:
-        radial-gradient(
-            60vmax 60vmax at 0% 0%,
-            hsla(240, 100%, 2%, 0.9) 0%,
-            hsla(240, 100%, 2%, 0) 95%),
-        radial-gradient(
-            80vmax 50vmax at 110% -10%,
-            hsla(175, 100%, 60%, 0.9) 0%,
-            hsla(200, 100%, 50%, 0.5) 50%,
-            hsla(240, 100%, 50%, 0) 95%),
-        radial-gradient(
-            90vmax 50vmax at 50vmax 50vmax,
-            hsla(260, 100%, 60%, 0.9) 0%,
-            hsla(240, 100%, 60%, 0) 95%)
-        var(--background);
+    background: var(--background);
 }
 
 footer a {

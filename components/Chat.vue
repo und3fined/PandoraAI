@@ -418,7 +418,7 @@ if (!process.server) {
             ref="inputContainerElement"
             class="mx-auto w-full max-w-4xl px-3 xl:px-0 flex flex-row absolute left-0 right-0 mb-7 sm:mb-0 z-10"
         >
-            <div class="relative flex flex-row w-full justify-center items-stretch rounded shadow">
+            <div class="relative flex flex-row w-full justify-center items-stretch rounded-lg overflow-hidden shadow">
                 <div
                     ref="chatButtonsContainerElement"
                     class="flex gap-2 mb-3 items-stretch justify-center absolute bottom-full"
@@ -455,13 +455,12 @@ if (!process.server) {
                     />
                 </Transition>
                 <button
-                    @click="isClientDropdownOpen = !isClientDropdownOpen"
                     class="flex items-center w-10 h-10 my-auto ml-2 justify-center absolute left-0 top-0 bottom-0 z-10"
-                    :disabled="!canChangePreset"
+                    :disabled="true"
                 >
                     <Transition name="fade" mode="out-in">
                         <GPTIcon
-                            v-if="activePresetNameToUse === 'chatgpt' || activePresetToUse?.client === 'chatgpt'"
+                            v-if="activePresetNameToUse === 'bing' || activePresetToUse?.client === 'bing'"
                             class="w-10 h-10 p-2 block transition duration-300 ease-in-out rounded-lg"
                             :class="{
                                 'opacity-50 cursor-not-allowed': !!processingController,
