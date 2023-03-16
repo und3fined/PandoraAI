@@ -3,6 +3,8 @@ import { storeToRefs } from 'pinia';
 import { useAppStore } from '~/stores/app';
 import BingIcon from '~/components/Icons/BingIcon.vue';
 import GPTIcon from '~/components/Icons/GPTIcon.vue';
+import ChatIcon from '~/components/Icons/ChatIcon.vue';
+import BarsIcon from '~/components/Icons/BarsIcon.vue';
 
 const appStore = useAppStore();
 const {
@@ -132,7 +134,7 @@ const clearConversationsHandler = () => {
                         :class="{ 'cursor-not-allowed': !!processingController }"
                     >
                         <span
-                            class="text-sm mb-1 flex flex-row items-center gap-2 w-full"
+                            class="text-sm mb-1 flex flex-row items-center justify-center gap-2 w-full"
                             :title="conversation.title"
                         >
                             <GPTIcon
@@ -147,13 +149,21 @@ const clearConversationsHandler = () => {
                                 v-else-if="(conversation.activePreset?.client || conversation.activePresetName) === 'bing'"
                                 class="h-3 rounded-lg opacity-80"
                             />
-                            <span class="flex-1 truncate">{{ conversation.title || 'New Chat' }} - {{ JSON.stringify(conversation.throttling) }}</span>
+                            <ChatIcon
+                                v-else-if="(conversation.activePreset?.client || conversation.activePresetName) === 'chat'"
+                                class="h-4 rounded-lg opacity-80"
+                            />
+                            <BarsIcon
+                                v-else-if="(conversation.activePreset?.client || conversation.activePresetName) === 'compose'"
+                                class="h-4 rounded-lg opacity-80"
+                            />
+                            <span class="flex-1 truncate">{{ conversation.title || 'New Chat' }}</span>
                         </span>
-                        <span class="text-xs text-white/30 truncate">
+                        <!-- <span class="text-xs text-white/30 truncate">
                             {{ conversation.id }}
-                        </span>
+                        </span> -->
                         <span class="text-xs text-white/40">
-                            {{ (new Date(conversation.updatedAt)).toLocaleString() }}
+                            {{ conversation.data.throttling.numUserMessagesInConversation }}/{{ conversation.data.throttling.maxNumUserMessagesInConversation }} - {{ (new Date(conversation.updatedAt)).toLocaleString() }}
                         </span>
                     </button>
                     <button

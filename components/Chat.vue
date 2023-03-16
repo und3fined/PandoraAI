@@ -203,7 +203,6 @@ const sendMessage = async (input) => {
                 }
                 if (eventMessage.event === 'result') {
                     const result = JSON.parse(eventMessage.data);
-                    console.debug(result);
                     messages.value[userMessageIndex].id = result.parentMessageId;
                     messages.value[botMessageIndex].id = result.messageId;
                     messages.value[botMessageIndex].parentMessageId = result.parentMessageId;
@@ -286,7 +285,7 @@ const parseMarkdown = (text, streaming = false) => {
     // If the count is odd and the text doesn't end with "```", add a closing block
     if (codeBlockCount % 2 === 1 && !text.endsWith('```')) {
         if (streaming) {
-            text += '█\n```';
+            text += '<span class="animate-pulse">▐</span>\n```';
             cursorAdded = true;
         } else {
             text += '\n```';
@@ -297,7 +296,7 @@ const parseMarkdown = (text, streaming = false) => {
         text = text.replace(/```$/, '\n```');
     }
     if (streaming && !cursorAdded) {
-        text += '█';
+        text += '<span class="animate-pulse">▐</span>';
     }
 
     // convert to markdown
@@ -392,7 +391,7 @@ if (!process.server) {
                     :key="index"
                 >
                     <div
-                        class="p-3 rounded-sm"
+                        class="p-3 rounded-lg"
                         :class="{
                             'bg-white/10 backdrop-blur-sm shadow': message.role === 'bot',
                         }"
@@ -400,9 +399,11 @@ if (!process.server) {
                         <!-- role name -->
                         <div
                             class="text-xs text-white/50 mb-1"
+                            :class="{'mb-0': message.role === 'bot'}"
                         >
                             <template v-if="message.role === 'bot'">
-                                {{ activePresetToUse?.options?.clientOptions?.chatGptLabel || 'AI' }}
+                                <!-- {{ activePresetToUse?.options?.clientOptions?.chatGptLabel || 'AI' }} -->
+                                <span></span>
                             </template>
                             <template v-else-if="message.role === 'user'">
                                 {{ activePresetToUse?.options?.clientOptions?.userLabel || 'User' }}

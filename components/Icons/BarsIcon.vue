@@ -4,7 +4,7 @@
  * File Created: 17 Mar 2023 00:13:38
  * Author: und3fined (me@und3fined.com)
  * -----
- * Last Modified: 17 Mar 2023 00:15:16
+ * Last Modified: 17 Mar 2023 01:59:11
  * Modified By: und3fined (me@und3fined.com)
  * -----
  * Copyright (c) 2023 und3fined.com
@@ -17,7 +17,6 @@
     viewBox="0 0 24 24"
     stroke-width="1.5"
     stroke="currentColor"
-    class="w-10 h-10"
   >
     <path
       stroke-linecap="round"
