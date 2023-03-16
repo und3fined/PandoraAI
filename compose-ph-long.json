@@ -1,0 +1,51 @@
+{
+  "arguments": [
+    {
+      "source": "cib",
+      "optionsSets": [
+        "nlu_direct_response_filter",
+        "deepleo",
+        "enable_debug_commands",
+        "disable_emoji_spoken_text",
+        "responsible_ai_policy_235",
+        "enablemm",
+        "h3imaginative",
+        "nocache",
+        "nosugg"
+      ],
+      "allowedMessageTypes": [
+        "Chat",
+        "InternalSearchQuery",
+        "InternalSearchResult",
+        "Disengaged",
+        "InternalLoaderMessage",
+        "RenderCardRequest",
+        "AdsQuery",
+        "SemanticSerp",
+        "GenerateContentQuery",
+        "SearchQuery"
+      ],
+      "sliceIds": [],
+      "spokenTextMode": "None",
+      "isStartOfSession": true,
+      "message": {
+        "locale": "en-US",
+        "market": "en-US",
+        "region": "WW",
+        "location": "lat:47.639557;long:-122.128159;re=1000m;",
+        "author": "user",
+        "inputMethod": "Keyboard",
+        "text": "Please write a *long* *paragraph* in a *funny* style about `Hello text`. Please wrap the paragraph in a markdown codeblock.",
+        "messageType": "Chat"
+      },
+      "conversationSignature": "l/PrhMfRyeaVmBuD1x5V5uegA4w7My/rUX+fXY6QZEo=",
+      "participant": {
+        "id": "1055522552983302"
+      },
+      "conversationId": "51D|BingProd|50B9B7FAE8DCAEE3D5BE958BD52AB359FB20D20390709EC43FDA0F0A78DD909B"
+    }
+  ],
+  "invocationId": "20",
+  "target": "chat",
+  "type": 4
+}

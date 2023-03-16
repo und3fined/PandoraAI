@@ -136,7 +136,7 @@ const clearConversationsHandler = () => {
                             :title="conversation.title"
                         >
                             <GPTIcon
-                                v-if="(conversation.activePreset?.client || conversation.activePresetName) === 'chatgpt'"
+                                v-if="(conversation.activePreset?.client || conversation.activePresetName) === 'bing'"
                                 class="h-3 rounded-lg opacity-80"
                             />
                             <GPTIcon
@@ -147,7 +147,7 @@ const clearConversationsHandler = () => {
                                 v-else-if="(conversation.activePreset?.client || conversation.activePresetName) === 'bing'"
                                 class="h-3 rounded-lg opacity-80"
                             />
-                            <span class="flex-1 truncate">{{ conversation.title || 'New Chat' }}</span>
+                            <span class="flex-1 truncate">{{ conversation.title || 'New Chat' }} - {{ JSON.stringify(conversation.throttling) }}</span>
                         </span>
                         <span class="text-xs text-white/30 truncate">
                             {{ conversation.id }}

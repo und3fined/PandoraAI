@@ -4,8 +4,9 @@ import { marked } from 'marked';
 import DOMPurify from 'isomorphic-dompurify';
 import hljs from 'highlight.js';
 import { storeToRefs } from 'pinia';
-import BingIcon from '~/components/Icons/BingIcon.vue';
-import GPTIcon from '~/components/Icons/GPTIcon.vue';
+import ChatIcon from '~/components/Icons/ChatIcon.vue';
+import BarsIcon from '~/components/Icons/BarsIcon.vue';
+import CloseIcon from '~/components/Icons/CloseIcon.vue';
 import ClientDropdown from '~/components/Chat/ClientDropdown.vue';
 import ClientSettings from '~/components/Chat/ClientSettings.vue';
 
@@ -213,6 +214,7 @@ const sendMessage = async (input) => {
                         conversationData.value = {
                             jailbreakConversationId: result.jailbreakConversationId,
                             parentMessageId: result.messageId,
+                            throttling: result.throttling,
                         };
                     } else if (result.conversationSignature) {
                         // Bing
@@ -222,6 +224,7 @@ const sendMessage = async (input) => {
                             conversationSignature: result.conversationSignature,
                             clientId: result.clientId,
                             invocationId: result.invocationId,
+                            throttling: result.throttling,
                         };
                     } else {
                         // other clients
@@ -230,6 +233,7 @@ const sendMessage = async (input) => {
                             conversationId: result.conversationId,
                             parentMessageId: result.messageId,
                             title: result.title,
+                            throttling: result.throttling,
                         };
                     }
                     const adaptiveText = result.details.adaptiveCards?.[0]?.body?.[0]?.text?.trim();
@@ -341,6 +345,8 @@ if (!process.server) {
 
     watch(currentConversation, (newData, oldData) => {
         if (currentConversation.value) {
+            console.info('currentConversation', currentConversation);
+
             conversationData.value = currentConversation.value.data;
             messages.value = currentConversation.value.messages;
             nextTick(() => {
@@ -418,7 +424,7 @@ if (!process.server) {
             ref="inputContainerElement"
             class="mx-auto w-full max-w-4xl px-3 xl:px-0 flex flex-row absolute left-0 right-0 mb-7 sm:mb-0 z-10"
         >
-            <div class="relative flex flex-row w-full justify-center items-stretch rounded-lg overflow-hidden shadow">
+            <div class="relative flex flex-row w-full justify-center items-stretch shadow">
                 <div
                     ref="chatButtonsContainerElement"
                     class="flex gap-2 mb-3 items-stretch justify-center absolute bottom-full"
@@ -455,12 +461,23 @@ if (!process.server) {
                     />
                 </Transition>
                 <button
-                    class="flex items-center w-10 h-10 my-auto ml-2 justify-center absolute left-0 top-0 bottom-0 z-10"
-                    :disabled="true"
+                    @click="isClientDropdownOpen = !isClientDropdownOpen"
+                    class="flex items-center w-10 h-10 my-auto ml-2 justify-center absolute left-0 top-0 bottom-0 z-10 rounded-l-lg"
+                    :disabled="!canChangePreset"
                 >
                     <Transition name="fade" mode="out-in">
-                        <GPTIcon
-                            v-if="activePresetNameToUse === 'bing' || activePresetToUse?.client === 'bing'"
+                        <CloseIcon
+                            v-if="isClientDropdownOpen"
+                            class="w-10 h-10 p-2 block transition duration-300 ease-in-out rounded-lg text-red-500"
+                            :class="{
+                                'opacity-50 cursor-not-allowed': !!processingController,
+                                'opacity-80': !canChangePreset,
+                                'hover:bg-black/30 cursor-pointer hover:shadow': canChangePreset,
+                                'bg-black/30 shadow': isClientDropdownOpen,
+                            }"
+                        />
+                        <BarsIcon
+                            v-else-if="activePresetNameToUse === 'compose' || activePresetToUse?.client === 'compose'"
                             class="w-10 h-10 p-2 block transition duration-300 ease-in-out rounded-lg"
                             :class="{
                                 'opacity-50 cursor-not-allowed': !!processingController,
@@ -469,18 +486,8 @@ if (!process.server) {
                                 'bg-black/30 shadow': isClientDropdownOpen,
                             }"
                         />
-                        <GPTIcon
-                            v-else-if="activePresetNameToUse === 'chatgpt-browser' || activePresetToUse?.client === 'chatgpt-browser'"
-                            class="w-10 h-10 p-2 text-[#6ea194] block transition duration-300 ease-in-out rounded-lg"
-                            :class="{
-                                'opacity-50 cursor-not-allowed': !!processingController,
-                                'opacity-80': !canChangePreset,
-                                'hover:bg-black/30 cursor-pointer hover:shadow': canChangePreset,
-                                'bg-black/30 shadow': isClientDropdownOpen,
-                            }"
-                        />
-                        <BingIcon
-                            v-else-if="activePresetNameToUse === 'bing' || activePresetToUse?.client === 'bing'"
+                        <ChatIcon
+                            v-else-if="activePresetNameToUse === 'chat' || activePresetToUse?.client === 'chat'"
                             class="w-10 h-10 p-2 block transition duration-300 ease-in-out rounded-lg"
                             :class="{
                                 'opacity-50 cursor-not-allowed': !!processingController,
@@ -496,10 +503,10 @@ if (!process.server) {
                     :rows="inputRows"
                     v-model="message"
                     @keydown.enter.exact.prevent="sendMessage(message)"
-                    placeholder="Type your message here..."
+                    placeholder="Ask me anything..."
                     :disabled="!!processingController"
                     class="
-                        py-4 pl-14 pr-14 rounded-l-sm text-slate-100 w-full bg-white/5 backdrop-blur-sm
+                        py-4 pl-14 pr-14 rounded-l-lg text-slate-100 w-full bg-white/5 backdrop-blur-sm
                         placeholder-white/40 focus:outline-none resize-none placeholder:truncate
                     "
                     :class="{
@@ -511,7 +518,7 @@ if (!process.server) {
                     :disabled="!!processingController"
                     class="
                         flex items-center flex-1
-                        px-4 text-slate-300 rounded-r-sm bg-white/5 backdrop-blur-sm
+                        px-4 text-slate-300 rounded-r-lg bg-white/5 backdrop-blur-sm
                         transition duration-300 ease-in-out
                     "
                     :class="{

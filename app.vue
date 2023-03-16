@@ -20,7 +20,7 @@ const {
 } = storeToRefs(conversationsStore);
 
 useHead({
-    title: `${conversationTitle.value} - PandoraAI`,
+    title: `${conversationTitle.value} - und3fyAI`,
     meta: [
         {
             name: 'viewport',

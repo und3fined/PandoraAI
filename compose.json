@@ -1,0 +1,51 @@
+{
+  "arguments": [
+    {
+      "source": "cib",
+      "optionsSets": [
+        "nlu_direct_response_filter",
+        "deepleo",
+        "enable_debug_commands",
+        "disable_emoji_spoken_text",
+        "responsible_ai_policy_235",
+        "enablemm",
+        "h3imaginative",
+        "nocache",
+        "nosugg"
+      ],
+      "allowedMessageTypes": [
+        "Chat",
+        "InternalSearchQuery",
+        "InternalSearchResult",
+        "Disengaged",
+        "InternalLoaderMessage",
+        "RenderCardRequest",
+        "AdsQuery",
+        "SemanticSerp",
+        "GenerateContentQuery",
+        "SearchQuery"
+      ],
+      "sliceIds": [],
+      "spokenTextMode": "None",
+      "isStartOfSession": true,
+      "message": {
+        "locale": "en-US",
+        "market": "en-US",
+        "region": "WW",
+        "location": "lat:47.639557;long:-122.128159;re=1000m;",
+        "author": "user",
+        "inputMethod": "Keyboard",
+        "text": "Please write a *medium* *blog post* in a *professional* style about `Giới thiệu trang web decrypt.day`. Please wrap the blog post in a markdown codeblock.",
+        "messageType": "Chat"
+      },
+      "conversationSignature": "l2Gd5zNvdVMs2SWtSI3G7jv4AwWwhvytnPRjdqllcSw=",
+      "participant": {
+        "id": "1055522552983302"
+      },
+      "conversationId": "51D|BingProd|5ABC575ED83971F0AEDA551B0EF1079A42CA411F8BED4A2E11755889C2EEC110"
+    }
+  ],
+  "invocationId": "19",
+  "target": "chat",
+  "type": 4
+}

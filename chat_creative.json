@@ -1,0 +1,116 @@
+{
+  "arguments": [
+    {
+      "source": "cib",
+      "optionsSets": [
+        "nlu_direct_response_filter",
+        "deepleo",
+        "disable_emoji_spoken_text",
+        "responsible_ai_policy_235",
+        "enablemm",
+        "jbf",
+        "wlthrottle",
+        "dl_edge_prompt",
+        "dv3sugg",
+        "h3imaginative",
+        "clgalileo"
+      ],
+      "allowedMessageTypes": [
+        "Chat",
+        "InternalSearchQuery",
+        "InternalSearchResult",
+        "Disengaged",
+        "InternalLoaderMessage",
+        "RenderCardRequest",
+        "AdsQuery",
+        "SemanticSerp",
+        "GenerateContentQuery",
+        "SearchQuery"
+      ],
+      "sliceIds": [
+        "0310wlthrot",
+        "302blcklists0",
+        "308enbsd",
+        "308jbf",
+        "314glprompts0",
+        "linkimgintf",
+        "perfinstcf",
+        "revdv3cf",
+        "scfraithct",
+        "sempserpnolen",
+        "sydperfinput",
+        "308sdcnt2",
+        "scraith70"
+      ],
+      "traceId": "6413347ece104800b0dcd0d669797046",
+      "isStartOfSession": true,
+      "message": {
+        "locale": "en-US",
+        "market": "en-US",
+        "region": "WW",
+        "location": "lat:47.639557;long:-122.128159;re=1000m;",
+        "locationHints": [
+          {
+            "country": "Viet Nam",
+            "state": "Hanoi",
+            "city": "Hanoi",
+            "timezoneoffset": 7,
+            "countryConfidence": 8,
+            "cityConfidence": 5,
+            "Center": {
+              "Latitude": 21.0283,
+              "Longitude": 105.8539
+            },
+            "RegionType": 2,
+            "SourceType": 1
+          }
+        ],
+        "timestamp": "2023-03-16T22:23:40+07:00",
+        "author": "user",
+        "inputMethod": "Keyboard",
+        "text": "How can I create a budget?",
+        "messageType": "Chat"
+      },
+      "conversationSignature": "jcuBx8YrCSQc8yjnRXAn0WN0PbRzlzIy70DTiBn4QRo=",
+      "participant": {
+        "id": "1055522552983302"
+      },
+      "conversationId": "51D|BingProd|AEF29EF6A85E537A146B54F0709F333453F42F2728B801B81864BA8DCC479077",
+      "previousMessages": [
+        {
+          "text": "Great, let's change the subject. What's on your mind?",
+          "author": "bot",
+          "adaptiveCards": [],
+          "suggestedResponses": [
+            {
+              "text": "How can I create a budget?",
+              "contentOrigin": "DeepLeo",
+              "messageType": "Suggestion",
+              "messageId": "9c2d6b9b-e902-06f0-d472-4e9c6b0aa474",
+              "offense": "Unknown"
+            },
+            {
+              "text": "Show me inspirational quotes",
+              "contentOrigin": "DeepLeo",
+              "messageType": "Suggestion",
+              "messageId": "ec53e99d-dad3-0b98-a671-1798b38baf68",
+              "offense": "Unknown"
+            },
+            {
+              "text": "How were the pyramids built?",
+              "contentOrigin": "DeepLeo",
+              "messageType": "Suggestion",
+              "messageId": "091cf97b-5e56-d5d8-9033-fde4ad4edec5",
+              "offense": "Unknown"
+            }
+          ],
+          "messageId": "e19e3bb0-9c5b-7eb5-a2bf-b32da2517218",
+          "messageType": "Chat"
+        }
+      ]
+    }
+  ],
+  "invocationId": "5",
+  "target": "chat",
+  "type": 4
+}
