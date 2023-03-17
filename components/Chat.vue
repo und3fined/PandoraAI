@@ -26,6 +26,26 @@ marked.setOptions({
     langPrefix: 'hljs language-',
 });
 
+const composeOptions = {
+    tone: ['Professional', 'Casual', 'Enthusiastic', 'Informational', 'Funny'],
+    format: ['Paragraph', 'Email', 'Blog post', 'Ideas'],
+    length: ['Short', 'Medium', 'Long']
+}
+
+const composeDefault= {
+    tone: 1,
+    format: 1,
+    length: 2,
+}
+
+const chatOptions = {
+    tone: ['Creative', 'Balanced', 'Precise']
+}
+
+const chatDefault = {
+    tone: 2,
+}
+
 const config = useRuntimeConfig();
 
 const presetsStore = usePresetsStore();
@@ -129,7 +149,8 @@ const sendMessage = async (input) => {
         text: input,
         role: 'user',
     };
-    messages.value.push(userMessage);
+    if ('continue' !== input.toLowerCase()) messages.value.push(userMessage);
+
     const userMessageIndex = messages.value.length - 1;
 
     const botMessage = {
@@ -237,7 +258,6 @@ const sendMessage = async (input) => {
                     }
                     const adaptiveText = result.details.adaptiveCards?.[0]?.body?.[0]?.text?.trim();
                     if (adaptiveText) {
-                        console.debug('adaptiveText', adaptiveText);
                         messages.value[botMessageIndex].text = adaptiveText;
                     } else {
                         messages.value[botMessageIndex].text = result.response;
@@ -276,39 +296,91 @@ const sendMessage = async (input) => {
     }
 };
 
-const parseMarkdown = (text, streaming = false) => {
+const parseMarkdown = (text, streaming = false, index = -1, presetName = null) => {
     text = text.trim();
     let cursorAdded = false;
-    // workaround for incomplete code, closing the block if it's not closed
-    // First, count occurrences of "```" in the text
-    const codeBlockCount = (text.match(/```/g) || []).length;
-    // If the count is odd and the text doesn't end with "```", add a closing block
-    if (codeBlockCount % 2 === 1 && !text.endsWith('```')) {
-        if (streaming) {
-            text += '<span class="animate-pulse">▐</span>\n```';
-            cursorAdded = true;
-        } else {
-            text += '\n```';
+
+    if (presetName === 'chat') {
+        // workaround for incomplete code, closing the block if it's not closed
+        // First, count occurrences of "```" in the text
+        const codeBlockCount = (text.match(/```/g) || []).length;
+        // If the count is odd and the text doesn't end with "```", add a closing block
+        if (codeBlockCount % 2 === 1 && !text.endsWith('```')) {
+            if (streaming) {
+                text += '▐\n```';
+                cursorAdded = true;
+            } else {
+                text += '\n```';
+            }
         }
-    }
-    if (codeBlockCount) {
-        // make sure the last "```" is on a newline
-        text = text.replace(/```$/, '\n```');
-    }
-    if (streaming && !cursorAdded) {
-        text += '<span class="animate-pulse">▐</span>';
+        if (codeBlockCount) {
+            // make sure the last "```" is on a newline
+            text = text.replace(/```$/, '\n```');
+        }
+        if (streaming && !cursorAdded) {
+            text += '<span class="animate-pulse">▐</span>';
+        }
+    } else {
+        if (index !== 1) {
+            text = text.replace('```', '');
+            text = text.replace('```', '\n---\n');
+        }
+
+        if (index === 1) {
+            text = text.replace('```markdown', '');
+            text = text.replace('```', '');
+        }
+
+        text = text.replace('```markdown', '\n---\n');
+
+        if (streaming && !cursorAdded) {
+            text += '<span class="animate-pulse">▐</span>';
+        }
     }
 
     // convert to markdown
     let parsed = marked.parse(text);
     // format Bing's source links more nicely
     // 1. replace "[^1^]" with "[1]" (during progress streams)
-    parsed = parsed.replace(/\[\^(\d+)\^]/g, '<strong>[$1]</strong>');
+    parsed = parsed.replace(/\[\^(\d+)\^]/g, ' <strong class="ordinal">[$1]</strong>');
     // 2. replace "^1^" with "[1]" (after the progress stream is done)
-    parsed = parsed.replace(/\^(\d+)\^/g, '<strong>[$1]</strong>');
+    parsed = parsed.replace(/\^(\d+)\^/g, ' <strong class="ordinal">[$1]</strong>');
 
     return DOMPurify.sanitize(parsed);
 };
+
+const genClientOptions = (preset, options = null) => {
+    let presetOpts = {};
+    let valOpts = {};
+    if (preset === 'chat') {
+        presetOpts = chatDefault;
+        valOpts = chatOptions;
+    }
+    if (preset === 'compose') {
+        presetOpts = composeDefault;
+        valOpts = composeOptions;
+    }
+
+    if (options) {
+        presetOpts = {...presetOpts, ...options};
+    }
+
+    let htmlContent = '';
+
+    Object.keys(presetOpts).map((key, index) => {
+        let val = presetOpts[key] - 1;
+        let classExt = index > 0 ? 'pl-6' : '';
+
+        htmlContent += `
+            <p class="inline ${classExt}">
+                <label class="capitalize font-medium"> ${key}:</label>
+                <span>${valOpts[key][val]}</span>
+            </p>
+        `
+    });
+
+    return htmlContent || '<div>...</div>';
+}
 
 const setIsClientSettingsModalOpen = (isOpen, client = null, presetName = null) => {
     isClientSettingsModalOpen.value = isOpen;
@@ -344,8 +416,6 @@ if (!process.server) {
 
     watch(currentConversation, (newData, oldData) => {
         if (currentConversation.value) {
-            console.info('currentConversation', currentConversation);
-
             conversationData.value = currentConversation.value.data;
             messages.value = currentConversation.value.messages;
             nextTick(() => {
@@ -391,15 +461,15 @@ if (!process.server) {
                     :key="index"
                 >
                     <div
-                        class="p-3 rounded-lg"
+                        class="p-3 rounded-lg mb-1"
                         :class="{
                             'bg-white/10 backdrop-blur-sm shadow': message.role === 'bot',
                         }"
                     >
                         <!-- role name -->
                         <div
-                            class="text-xs text-white/50 mb-1"
-                            :class="{'mb-0': message.role === 'bot'}"
+                            class="text-xs text-white/50"
+                            :class="{'mb-1': message.role !== 'bot'}"
                         >
                             <template v-if="message.role === 'bot'">
                                 <!-- {{ activePresetToUse?.options?.clientOptions?.chatGptLabel || 'AI' }} -->
@@ -415,7 +485,7 @@ if (!process.server) {
                         <!-- message text -->
                         <div
                             class="prose prose-sm prose-chatgpt break-words max-w-6xl"
-                            v-html="(message.role === 'user' || message.raw) ? parseMarkdown(message.text) : parseMarkdown(message.text, true)"
+                            v-html="(message.role === 'user' || message.raw) ? parseMarkdown(message.text) : parseMarkdown(message.text, true, index, activePresetNameToUse || activePresetToUse?.client)"
                         />
                     </div>
                 </div>
@@ -423,12 +493,12 @@ if (!process.server) {
         </div>
         <div
             ref="inputContainerElement"
-            class="mx-auto w-full max-w-4xl px-3 xl:px-0 flex flex-row absolute left-0 right-0 mb-7 sm:mb-0 z-10"
+            class="mx-auto w-full max-w-4xl px-3 xl:px-0 flex flex-col absolute left-0 right-0 mb-7 sm:mb-0 z-10"
         >
             <div class="relative flex flex-row w-full justify-center items-stretch shadow">
                 <div
                     ref="chatButtonsContainerElement"
-                    class="flex gap-2 mb-3 items-stretch justify-center absolute bottom-full"
+                    class="flex gap-2 mb-3 items-stretch justify-center absolute bottom-full flex-row"
                     :class="{ 'w-full': !processingController }"
                 >
                     <button
@@ -451,6 +521,16 @@ if (!process.server) {
                         "
                     >
                         {{ response }}
+                    </button>
+                    <button
+                        v-if="messages.length > 1 && !processingController"
+                        @click="sendMessage('Continue')"
+                        class="
+                            flex-1 py-2.5 px-5 bg-sky-500/50 backdrop-blur-sm text-slate-300 text-sm
+                            shadow rounded transition duration-300 ease-in-out hover:bg-sky-500/80
+                        "
+                    >
+                        Continue
                     </button>
                 </div>
                 <Transition name="slide-from-bottom">
@@ -530,6 +610,12 @@ if (!process.server) {
                     <Icon class="w-5 h-5" name="bx:bxs-send" />
                 </button>
             </div>
+            <div class="relative flex flex-row w-full justify-center items-center text-sm text-slate-300 pt-0.5">
+                <div
+                    class="prose prose-sm prose-chatgpt break-words max-w-6xl text-slate-500"
+                    v-html="(genClientOptions(activePresetNameToUse || activePresetToUse?.client, activePresetToUse?.options?.clientOptions))"
+                />
+            </div>
         </div>
     </div>
 </template>
@@ -579,6 +665,10 @@ if (!process.server) {
 
 .prose p {
     word-break: break-word;
+}
+
+.prose hr {
+    @apply mb-4 mt-0;
 }
 
 /* Getting rid of the main default styling of the range input */
