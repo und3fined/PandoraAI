@@ -84,7 +84,7 @@ const inputContainerElement = ref(null);
 const inputTextElement = ref(null);
 const chatButtonsContainerElement = ref(null);
 
-const canChangePreset = computed(() => !processingController.value && Object.keys(conversationData.value).length === 0);
+const canChangePreset = computed(() => (!processingController || !processingController.value) && Object.keys(conversationData.value).length === 0);
 
 // compute number of rows for textarea based on message newlines, up to 7
 const inputRows = computed(() => {
@@ -97,7 +97,7 @@ const scrollToBottom = () => {
 };
 
 const stopProcessing = () => {
-    if (!processingController.value) {
+    if (!processingController || !processingController.value) {
         return;
     }
     processingController.value.abort();
@@ -124,7 +124,7 @@ const setChatContainerHeight = () => {
 };
 
 const sendMessage = async (input) => {
-    if (processingController.value) {
+    if (processingController && processingController.value) {
         return;
     }
 
@@ -200,6 +200,8 @@ const sendMessage = async (input) => {
         body: JSON.stringify(data),
     };
 
+    let requestComplete = false;
+
     try {
         await fetchEventSource(`${config.apiBaseUrl}/conversation`, {
             ...opts,
@@ -262,6 +264,10 @@ const sendMessage = async (input) => {
                     } else {
                         messages.value[botMessageIndex].text = result.response;
                     }
+
+                    let botMsg = messages.value[botMessageIndex].text;
+                    if (botMsg.length > 3 && botMsg.endsWith('```')) requestComplete = true;
+
                     messages.value[botMessageIndex].raw = result;
                     if (result.details.suggestedResponses) {
                         suggestedResponses.value = result.details.suggestedResponses.map(response => response.text);
@@ -278,6 +284,7 @@ const sendMessage = async (input) => {
                     messages.value[botMessageIndex].error = true;
                     messages.value[botMessageIndex].raw = eventMessageData;
                     nextTick().then(() => scrollToBottom());
+                    requestComplete = true;
                     return;
                 }
                 messages.value[botMessageIndex].text += JSON.parse(eventMessage.data);
@@ -285,14 +292,24 @@ const sendMessage = async (input) => {
             },
         });
     } catch (err) {
+        requestComplete = true;
         console.error('ERROR', err);
     } finally {
-        if (!processingController.value?.signal.aborted) {
+        if (processingController.value && !processingController.value?.signal.aborted) {
+            requestComplete = true;
             processingController.value.abort();
         }
         processingController.value = null;
         await nextTick();
         inputTextElement.value.focus();
+
+        if (clientOptions.clientToUse === 'compose' && !requestComplete) {
+            // auto continue for compose after 3 second
+            let composeTimeout = setTimeout(() => {
+                sendMessage('Continue');
+                if (composeTimeout) clearTimeout(composeTimeout);
+            }, 3000);
+        }
     }
 };
 
@@ -322,16 +339,14 @@ const parseMarkdown = (text, streaming = false, index = -1, presetName = null) =
         }
     } else {
         if (index !== 1) {
-            text = text.replace('```', '');
+            text = text.replace('```markdown', '');
             text = text.replace('```', '\n---\n');
         }
 
         if (index === 1) {
-            text = text.replace('```markdown', '');
-            text = text.replace('```', '');
+            text = text.replace('```markdown', '\n\n');
+            text = text.replace('```', '\n');
         }
-
-        text = text.replace('```markdown', '\n---\n');
 
         if (streaming && !cursorAdded) {
             text += '<span class="animate-pulse">▐</span>';
@@ -522,7 +537,7 @@ if (!process.server) {
                     >
                         {{ response }}
                     </button>
-                    <button
+                    <!-- <button
                         v-if="messages.length > 1 && !processingController && (activePresetNameToUse === 'compose' || activePresetToUse?.client === 'compose')"
                         @click="sendMessage('Continue')"
                         class="
@@ -531,7 +546,7 @@ if (!process.server) {
                         "
                     >
                         Continue
-                    </button>
+                    </button> -->
                 </div>
                 <Transition name="slide-from-bottom">
                     <ClientDropdown
