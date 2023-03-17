@@ -523,7 +523,7 @@ if (!process.server) {
                         {{ response }}
                     </button>
                     <button
-                        v-if="messages.length > 1 && !processingController"
+                        v-if="messages.length > 1 && !processingController && (activePresetNameToUse === 'compose' || activePresetToUse?.client === 'compose')"
                         @click="sendMessage('Continue')"
                         class="
                             flex-1 py-2.5 px-5 bg-sky-500/50 backdrop-blur-sm text-slate-300 text-sm
